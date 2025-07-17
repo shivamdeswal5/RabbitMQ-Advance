@@ -1,0 +1,48 @@
+services:
+  service-one:
+    build: .
+    container_name: service-one
+    ports:
+      - "${APP_PORT}:3001"
+    environment:
+      RABBITMQ_URL: ${RABBITMQ_URL}
+    volumes:
+      - .:/app
+    networks:
+      - shared-net
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    command: npm run start:dev
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: 'rabbitmq:3-management-alpine'
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    volumes:
+      - rabbitmq:/var/lib/rabbitmq/
+      - rabbitmq_logs:/var/log/rabbitmq
+    networks:
+      - shared-net
+
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  shared-net:
+    name: shared-net
+    driver: bridge
+    external: true
+
+volumes:
+  rabbitmq:
+  rabbitmq_logs:

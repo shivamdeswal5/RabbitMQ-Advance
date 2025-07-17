@@ -1,0 +1,57 @@
+services:
+  service-two:
+    build: .
+    container_name: service-two
+    ports:
+      - "${APP_PORT}:3000"
+    depends_on:
+      - postgres
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: ${DB_DATABASE}
+      RABBITMQ_URL: ${RABBITMQ_URL}
+    volumes:
+      - .:/app
+    networks:
+      - shared-net
+    command: npm run start:dev
+
+  postgres:
+    image: postgres:15
+    container_name: service-two-db
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - shared-net
+    restart: always
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: service-two-pgadmin
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${DB_PASSWORD}
+    depends_on:
+      - postgres
+    networks:
+      - shared-net
+
+networks:
+  shared-net:
+    name: shared-net
+    driver: bridge
+    external: true
+
+volumes:
+  pgdata:
