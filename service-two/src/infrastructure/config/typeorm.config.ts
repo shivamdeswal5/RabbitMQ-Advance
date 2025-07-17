@@ -1,5 +1,6 @@
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { Student } from 'src/domain/student/student.entity';
 
 export const getPostgresConfig = async (
   configService: ConfigService,
@@ -9,7 +10,7 @@ export const getPostgresConfig = async (
   port: parseInt(configService.get<string>('DB_PORT') || '5432'),
   username: configService.get<string>('DB_USERNAME'),
   password: configService.get<string>('DB_PASSWORD'),
-  database: configService.get<string>('DB_NAME'),
-  entities: [__dirname + '/../../**/*.entity{.ts,.js}'],
+  database: configService.get<string>('DB_DATABASE'),
+  entities: [Student],
   synchronize: true,
 });
