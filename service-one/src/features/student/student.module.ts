@@ -5,4 +5,3 @@ import { CreateStudentModule } from './create-student/create-student.module';
   imports: [CreateStudentModule],
 })
 export class StudentModule {}
- 

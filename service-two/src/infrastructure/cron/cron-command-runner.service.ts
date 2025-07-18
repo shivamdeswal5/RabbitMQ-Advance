@@ -3,20 +3,24 @@ import { Cron } from '@nestjs/schedule';
 import { spawn } from 'child_process';
 import * as dotenv from 'dotenv';
 
-dotenv.config(); 
+dotenv.config();
 
 @Injectable()
 export class CronCommandRunnerService {
   private readonly logger = new Logger(CronCommandRunnerService.name);
 
-  @Cron('30 2 * * *') 
+  @Cron('*/10 * * * * *')
   handleCron() {
     this.logger.log('Running CLI command via cron...');
 
-    const child = spawn('npm', ['run', 'handle-messages', '--', 'handle-messages', '-l', '5'], {
-      shell: true,
-      env: process.env,
-    });
+    const child = spawn(
+      'npm',
+      ['run', 'handle-messages', '--', 'handle-messages'],
+      {
+        shell: true,
+        env: process.env,
+      },
+    );
 
     child.stdout.on('data', (data) => {
       this.logger.log(`STDOUT: ${data.toString().trim()}`);

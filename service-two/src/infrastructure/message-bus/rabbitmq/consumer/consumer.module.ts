@@ -7,6 +7,8 @@ import { RabbitMQService } from '../rabbitmq.service';
 import { ConsumerService } from './consumer.service';
 import { HandleMessagesCommand } from '../../../cli-commands/handle-message';
 import { getPostgresConfig } from '../../../config/typeorm.config';
+import { InboxMessage } from 'src/domain/inbox-message/inbox-message.entity';
+import { InboxMessageRepository } from 'src/infrastructure/repository/inbox-message.repository';
 
 @Module({
   imports: [
@@ -19,13 +21,14 @@ import { getPostgresConfig } from '../../../config/typeorm.config';
       inject: [ConfigService],
       useFactory: getPostgresConfig,
     }),
-    TypeOrmModule.forFeature([Student]),
+    TypeOrmModule.forFeature([Student, InboxMessage]),
   ],
   providers: [
     RabbitMQService,
     ConsumeStudentService,
     ConsumerService,
     HandleMessagesCommand,
+    InboxMessageRepository,
   ],
   exports: [ConsumerService],
 })

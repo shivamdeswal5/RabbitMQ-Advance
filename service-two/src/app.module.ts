@@ -5,10 +5,9 @@ import { getPostgresConfig } from './infrastructure/config/typeorm.config';
 import { StudentModule } from './features/student/student.module';
 import { AppService } from './app.service';
 import { AppController } from './app.controller';
-import { CronModule } from './features/cron/cron.module';
-
+import { CronModule } from './infrastructure/cron/cron.module';
 @Module({
-   imports: [
+  imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -16,7 +15,7 @@ import { CronModule } from './features/cron/cron.module';
       useFactory: getPostgresConfig,
     }),
     StudentModule,
-    CronModule
+    CronModule,
   ],
   controllers: [AppController],
   providers: [AppService],

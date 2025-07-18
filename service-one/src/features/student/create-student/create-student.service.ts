@@ -1,12 +1,24 @@
 import { Injectable } from '@nestjs/common';
-import { RabbitMQPublisher } from '../../../infrastructure/message-bus/rabbitmq/rabbitmq.publisher';
+import { InjectRepository } from '@nestjs/typeorm';
+import { OutboxMessageStatus } from '../../../domain/outbox-message/enums/outbox-message-status.enum';
+import { OutboxMessageRepository } from 'src/infrastructure/repository/outbox-message/outbox-message.repository';
 
 @Injectable()
 export class CreateStudentService {
-  constructor(private readonly publisher: RabbitMQPublisher) {}
+  constructor(
+    @InjectRepository(OutboxMessageRepository)
+    private readonly outboxRepo: OutboxMessageRepository,
+  ) {}
 
   async create(payload: { name: string; email: string }) {
-    await this.publisher.publishStudentCreated(payload);
-    return { message: 'Student created and message sent' };
+    const outbox = this.outboxRepo.create({
+      eventType: 'student.created',
+      payload,
+      status: OutboxMessageStatus.PENDING,
+    });
+
+    await this.outboxRepo.save(outbox);
+
+    return { message: 'Student event saved to outbox.' };
   }
 }

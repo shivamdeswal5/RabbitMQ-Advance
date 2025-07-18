@@ -1,7 +1,6 @@
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { InboxMessage } from 'src/domain/inbox-message/inbox-message.entity';
-import { Student } from 'src/domain/student/student.entity';
+import { OutboxMessage } from 'src/domain/outbox-message/outbox-message.entity';
 
 export const getPostgresConfig = async (
   configService: ConfigService,
@@ -12,6 +11,6 @@ export const getPostgresConfig = async (
   username: configService.get<string>('DB_USERNAME'),
   password: configService.get<string>('DB_PASSWORD'),
   database: configService.get<string>('DB_DATABASE'),
-  entities: [Student, InboxMessage],
+  entities: [OutboxMessage],
   synchronize: true,
 });

@@ -1,41 +1,25 @@
-
 import { Command, CommandRunner, Option } from 'nest-commander';
-import { ProducerService } from '../../infrastructure/message-bus/rabbitmq/producer/producer.service';
-
-interface PublishCommandOptions {
-  name: string;
-  email: string;
-}
+import { OutboxMessageRelayService } from '../message-bus/rabbitmq/outbox-message-relay.service';
 
 @Command({
   name: 'publish-message',
-  description: 'Publish a student.created event to RabbitMQ',
+  description: 'Dispatch unsent messages from outbox',
 })
 export class PublishMessageCommand extends CommandRunner {
-  constructor(private readonly producerService: ProducerService) {
+  constructor(private readonly relayService: OutboxMessageRelayService) {
     super();
   }
 
-  async run(_: string[], options: PublishCommandOptions): Promise<void> {
-    await this.producerService.sendStudentCreated(options.name, options.email);
-    console.log('Message published:', { name: options.name, email: options.email });
+  async run(_: string[], options: { limit: number }) {
+    await this.relayService.dispatchMessages(options.limit || 10);
   }
 
   @Option({
-    flags: '-n, --name <name>',
-    description: 'Name of the student',
-    required: true,
+    flags: '-l, --limit <limit>',
+    description: 'Number of messages to dispatch',
+    defaultValue: 10,
   })
-  parseName(val: string): string {
-    return val;
-  }
-
-  @Option({
-    flags: '-e, --email <email>',
-    description: 'Email of the student',
-    required: true,
-  })
-  parseEmail(val: string): string {
-    return val;
+  parseLimit(val: string): number {
+    return Number(val);
   }
 }

@@ -1,4 +1,3 @@
-
 import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Student } from '../../../domain/student/student.entity';
@@ -11,6 +10,6 @@ import { RabbitMQModule } from '../../../infrastructure/message-bus/rabbitmq/rab
     forwardRef(() => RabbitMQModule),
   ],
   providers: [ConsumeStudentService],
-  exports: [ConsumeStudentService], 
+  exports: [ConsumeStudentService],
 })
 export class ConsumeStudentModule {}
