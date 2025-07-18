@@ -12,7 +12,7 @@ export class CreateStudentService {
 
   async create(payload: { name: string; email: string }) {
     const outbox = this.outboxRepo.create({
-      eventType: 'student.created',
+      eventType: process.env.RABBITMQ_ROUTINGKEY,
       payload,
       status: OutboxMessageStatus.PENDING,
     });
